@@ -5,15 +5,14 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <ListView
-        android:id="@+id/part3_listview"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/part3_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/empty_textview"
-        android:layout_width="match_parent"
+        android:layout_width="340dp"
         android:layout_height="match_parent"
         android:gravity="top|left"
         android:text="This final part of the test involves 1) Creating a ListView with reusable list items,
@@ -24,7 +23,7 @@ Start by getting placeholder data to display in the ListView before moving on to
 JSON parsing.  Also, for your list items, please provide a simple layout with at least 2 TextViews (the part3_listview_item.xml
 is already in place for you to edit). Please refer
 to the 'TODO' comments in source code for further guidance."
-        android:visibility="gone"
+        android:visibility="invisible"
         />
 
 

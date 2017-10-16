@@ -9,7 +9,7 @@ import java.util.List;
  * Created by TAE on 16/10/2017.
  */
 
-public class ZipModel {
+public class ZipModel{
         @SerializedName("result")
         @Expose
         private List<Result> result = null;
@@ -22,7 +22,8 @@ public class ZipModel {
             this.result = result;
         }
 
-    }
+
+}
 
 
 

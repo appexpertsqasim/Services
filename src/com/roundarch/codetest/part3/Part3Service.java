@@ -4,13 +4,23 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
+import com.roundarch.codetest.model.ZipModel;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
 public class Part3Service extends IntentService {
 
     private final String TAG = this.getClass().getSimpleName();
+    String dataAPI=" http://gomashup.com/json.php?fds=geo/usa/zipcode/state/IL";
 
     // TODO - we can use this as the broadcast intent to filter for in our Part3Fragment
     public static final String ACTION_SERVICE_DATA_UPDATED = "com.roundarch.codetest.ACTION_SERVICE_DATA_UPDATED";
@@ -20,11 +30,14 @@ public class Part3Service extends IntentService {
     public Part3Service(String name) {
         super(name);
     }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return START_STICKY;
+    public Part3Service() {
+       super(null);
     }
+
+//    @Override
+//    public int onStartCommand(Intent intent, int flags, int startId) {
+//        return START_STICKY;
+//    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -35,22 +48,51 @@ public class Part3Service extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.i("Modell", "On handle intent called");
+        HttpURLConnection httpURLConnection;
+        URL url = null;
+        String jsonString,jsonData;
+        ZipModel zipModel = null;
+        try {
+            url = new URL(dataAPI);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        try {
+            Log.i("model","inside try");
+            httpURLConnection = (HttpURLConnection)url.openConnection();
+            Log.i("httpurl", httpURLConnection.getResponseMessage().toString());
+            int statusCode = httpURLConnection.getResponseCode();
+            Log.i("model", String.valueOf(statusCode));
+            if(statusCode == 200) {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+                StringBuilder stringBuilder = new StringBuilder();
+                while ((jsonData = bufferedReader.readLine()) != null) {
+                    broadcastDataUpdated(jsonData);
+                }
+
+
+            }else{
+                Log.i("Failed to get model","ttttttttttt");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
+
 
     private void updateData() {
         // TODO - start the update process for our data
     }
 
-    private void broadcastDataUpdated() {
+    private void broadcastDataUpdated(String string) {
         // TODO - send the broadcast
-//        Intent broadcastIntent = new Intent();
-//        broadcastIntent.setAction(
-//                Part3Fragment.ResponseReceiver.LOCAL_ACTION);
-//        broadcastIntent.putExtra(ACTION_SERVICE_DATA_UPDATED, databaseList());
-//        LocalBroadcastManager localBroadcastManager
-//                = LocalBroadcastManager.getInstance(this);
-//        localBroadcastManager.sendBroadcast(broadcastIntent);
+
+        Intent intentSend=new Intent();
+        intentSend.setAction(ACTION_SERVICE_DATA_UPDATED);
+        intentSend.putExtra("updated",string);
+        sendBroadcast(intentSend);
     }
 
     public final class Part3ServiceBinder extends Binder {
@@ -72,36 +114,8 @@ public class Part3Service extends IntentService {
     //
     // TODO - http://gomashup.com/json.php?fds=geo/usa/zipcode/state/IL
 
-//    public ZipModel doInBackground(String... urls) {
-//        HttpURLConnection httpURLConnection;
-//        URL url = null;
-//        String jsonString,jsonData;
-//        ZipModel exchangeModel = null;
-//        try {
-//            url = new URL(urls[0]);
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        try {
-//            httpURLConnection = (HttpURLConnection)url.openConnection();
-//            int statusCode = httpURLConnection.getResponseCode();
-//            if(statusCode == 200) {
-//                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
-//                StringBuilder stringBuilder = new StringBuilder();
-//                while ((jsonData = bufferedReader.readLine()) != null) {
-//                    stringBuilder.append(jsonData);
-//                }
-//                jsonString = stringBuilder.toString();
-//
-//                exchangeModel = new Gson().fromJson(jsonString, new TypeToken<ZipModel>(){}.getType());
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return exchangeModel;
-//    }
+
+
 }
 
 
